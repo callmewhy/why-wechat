@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>Weekly</title>
+</head>
+
+<body>
+
+<div>
+  # <%= currTimeStr %>
+</div>
+
+<br>
+
+<% for (var tag in items) {%>
+  <div>## <%= tag %></div>
+
+  <br />
+
+  <% for (var i in items[tag]) {%>
+    <div>- [<%= items[tag][i].title %>](<%= items[tag][i].url %>) </div>
+  <% } %>
+
+  <br />
+
+<% } %>
+
+</body>
+
+</html>
