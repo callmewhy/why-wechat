@@ -65,14 +65,21 @@ if (NODE_ENV === 'development') {
 }
 var pocket = require('pocket-sdk');
 pocket.init('48542-f35da0ac6285f46fcef9a93f', host + '/pocket/callback');
-app.use(pocket.oauth());
+app.use(pocket.oauth({
+  afterSuccess: function(ret, req, res, next) {
+    if (ret.access_token) {
+      res.cookie('access_token', ret.access_token);
+    }
+    return res.redirect('/pocket/items');
+  }
+}));
 
 // ----------------------------------------------------------------------------
 // 应用路由
 // ----------------------------------------------------------------------------
 
 var api = require('./routes/api');
-var weekly = require('./routes/weekly');
+var pocket = require('./routes/pocket');
 var cors = require('cors')
 
 app.use(cors());
@@ -82,7 +89,7 @@ app.get('/', function(req, res) {
 });
 
 app.use('/api', api);
-app.use('/weekly', weekly);
+app.use('/pocket', pocket);
 
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

@@ -28,12 +28,18 @@ function getNextWeekStart() {
 // ----------------------------------------------------------------------------
 // router
 // ----------------------------------------------------------------------------
+router.get('/mycallback', function(req, res) {
+  if (req.query.code) {
+    res.cookie('access_token', req.query.code);
+  }
+  return res.redirect('/pocket/items');
+});
+
+
 router.get('/items', function(req, res) {
   var token = req.cookies['access_token'];
   if (!token) {
-    return res.json({
-      'error': 'no access_token'
-    });
+    return res.redirect('/pocket/authorize');
   }
   var sinceDay = getLastWeekEnd();
   var config = {
@@ -43,7 +49,6 @@ router.get('/items', function(req, res) {
     detailType: 'complete',
     since: sinceDay.unix()
   };
-
   return pocket.get(config, function(err, ret) {
     if (err) {
       return res.json(err);
@@ -55,7 +60,7 @@ router.get('/items', function(req, res) {
         var readTimeStr = moment(item.time_read, "X").format("YYYY-MM-DD");
         return {
           tag: Object.keys(item.tags)[0],
-          title: item.resolved_title.replace('[','【').replace(']','】'),
+          title: item.resolved_title.replace('[', '【').replace(']', '】'),
           readTime: item.time_read,
           readTimeStr: readTimeStr,
           url: item.resolved_url
@@ -75,7 +80,6 @@ router.get('/items', function(req, res) {
       }
       items[item.tag].push(item);
     });
-
     var currTimeStr = getNextWeekStart().format("YYYY-MM-DD");
     res.render('weekly/items', {
       currTimeStr: currTimeStr,
