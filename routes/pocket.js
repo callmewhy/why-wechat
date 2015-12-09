@@ -57,9 +57,10 @@ router.get('/items', function(req, res) {
     var itemList = Object.keys(list)
       .map(function(key) {
         var item = list[key];
-        var readTimeStr = moment(item.time_read, "X").format("YYYY-MM-DD");
+        var readTimeStr = moment(item.time_read, 'X').format('YYYY-MM-DD');
+        item.tags = item.tags || [];
         return {
-          tag: Object.keys(item.tags)[0],
+          tag: Object.keys(item.tags)[0] || '未分类',
           title: item.resolved_title.replace('[', '【').replace(']', '】'),
           readTime: item.time_read,
           readTimeStr: readTimeStr,
@@ -67,7 +68,7 @@ router.get('/items', function(req, res) {
         };
       })
       .filter(function(item) {
-        return moment(item.readTime, "X").isAfter(sinceDay);
+        return moment(item.readTime, 'X').isAfter(sinceDay);
       })
       .sort(function(a, b) {
         return b.readTime - a.readTime;
@@ -80,7 +81,7 @@ router.get('/items', function(req, res) {
       }
       items[item.tag].push(item);
     });
-    var currTimeStr = getNextWeekStart().format("YYYY-MM-DD");
+    var currTimeStr = getNextWeekStart().format('YYYY-MM-DD');
     res.render('weekly/items', {
       currTimeStr: currTimeStr,
       title: 'Weekly',
