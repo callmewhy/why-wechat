@@ -54,14 +54,16 @@ router.get('/items', function(req, res) {
       return res.json(err);
     }
     var list = ret.list;
+    console.log(list);
     var itemList = Object.keys(list)
       .map(function(key) {
         var item = list[key];
         var readTimeStr = moment(item.time_read, 'X').format('YYYY-MM-DD');
         item.tags = item.tags || [];
+        var title = item.resolved_title || item.given_title;
         return {
           tag: Object.keys(item.tags)[0] || '未分类',
-          title: item.resolved_title.replace('[', '【').replace(']', '】'),
+          title: title.replace('[', '【').replace(']', '】'),
           readTime: item.time_read,
           readTimeStr: readTimeStr,
           url: item.resolved_url
